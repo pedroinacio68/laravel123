@@ -15,24 +15,25 @@ class DailyMenuTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_a_visitor_can_open_the_daily_menu_without_logging_in(): void
+    public function test_a_guest_must_log_in_before_opening_the_daily_menu(): void
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('Sou visitante')
-            ->assertSee(route('public-menu'));
+            ->assertSee('Área do visitante')
+            ->assertDontSee('Sou visitante');
 
-        $this->get(route('public-menu'))
+        $this->get(route('visitor.menu'))
+            ->assertRedirect(route('visitor.login'));
+
+        $this->get(route('visitor.login'))
             ->assertOk()
-            ->assertSee('CHAVE PIX CPF · DEMONSTRAÇÃO')
-            ->assertSee('000.000.000-00')
-            ->assertSee('Este CPF é fictício e não recebe pagamentos.')
-            ->assertSee('O cardápio de hoje ainda não foi publicado');
+            ->assertSee('ÁREA DO VISITANTE')
+            ->assertSee('Criar conta');
     }
 
     public function test_an_administrator_can_publish_food_for_visitors(): void
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
         $this->actingAs($admin);
 
         Livewire::test(MenuManager::class)
@@ -51,13 +52,17 @@ class DailyMenuTest extends TestCase
         Auth::logout();
         $this->assertGuest();
 
-        $this->get(route('public-menu'))
+        $this->get(route('visitor.menu'))
+            ->assertRedirect(route('visitor.login'));
+
+        $visitor = User::factory()->create(['role' => 'visitor']);
+        $this->actingAs($visitor)
+            ->get(route('visitor.menu'))
             ->assertOk()
             ->assertSee('Almoço de hoje')
             ->assertSee('Frango grelhado')
             ->assertSee('Acompanha arroz e salada.')
-            ->assertSee('R$ 18,50')
-            ->assertSee('000.000.000-00');
+            ->assertSee('R$ 18,50');
 
         $food = MenuItem::where('name', 'Frango grelhado')->firstOrFail();
         $this->actingAs($admin);
@@ -71,8 +76,8 @@ class DailyMenuTest extends TestCase
 
     public function test_administrators_share_one_menu_per_day(): void
     {
-        $admin = User::factory()->create();
-        $otherAdmin = User::factory()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $otherAdmin = User::factory()->create(['role' => 'admin']);
         $this->actingAs($admin);
 
         Livewire::test(MenuManager::class)
@@ -94,11 +99,18 @@ class DailyMenuTest extends TestCase
 
     public function test_food_cannot_be_added_before_saving_the_daily_menu(): void
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
 
         Livewire::test(MenuManager::class)
             ->set('foodName', 'Feijoada')
             ->call('addFood')
             ->assertHasErrors(['foodName']);
+    }
+
+    public function test_a_visitor_cannot_open_the_administrator_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'visitor']))
+            ->get(route('dashboard'))
+            ->assertForbidden();
     }
 }

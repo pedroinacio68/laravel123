@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\DailyMenu;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -41,7 +42,7 @@ class MenuManager extends Component
 
     public function saveMenu(): void
     {
-        abort_unless(Auth::check(), 403);
+        $this->authorizeAdministrator();
 
         $validated = $this->validate([
             'menuDate' => ['required', 'date_format:Y-m-d'],
@@ -60,7 +61,7 @@ class MenuManager extends Component
 
     public function addFood(): void
     {
-        abort_unless(Auth::check(), 403);
+        $this->authorizeAdministrator();
 
         $validated = $this->validate([
             'menuDate' => ['required', 'date_format:Y-m-d'],
@@ -89,7 +90,7 @@ class MenuManager extends Component
 
     public function removeFood(int $foodId): void
     {
-        abort_unless(Auth::check(), 403);
+        $this->authorizeAdministrator();
 
         $menu = $this->selectedMenu();
 
@@ -118,6 +119,13 @@ class MenuManager extends Component
             ->whereDate('menu_date', $this->menuDate)
             ->with('items')
             ->first();
+    }
+
+    private function authorizeAdministrator(): void
+    {
+        $user = Auth::user();
+
+        abort_unless($user instanceof User && $user->isAdmin(), 403);
     }
 
     public function render()

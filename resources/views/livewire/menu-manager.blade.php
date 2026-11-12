@@ -3,9 +3,8 @@
         <div>
             <p class="card-kicker">GERENCIAR CARDÁPIO</p>
             <h2 id="menu-manager-title">Monte o cardápio do dia</h2>
-            <p>As alterações ficam disponíveis para todos os visitantes.</p>
+            <p>As alterações ficam disponíveis para todos os visitantes cadastrados.</p>
         </div>
-        <a class="menu-preview-link" href="{{ route('public-menu') }}" target="_blank" rel="noopener">Abrir como visitante ↗</a>
     </div>
 
     @if ($notice)

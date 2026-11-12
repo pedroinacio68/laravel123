@@ -1332,8 +1332,12 @@ a {
         gap: 8px;
     }
 
-    .header-actions .header-link {
+    .header-actions .header-link:not(.account-access-link) {
         display: none;
+    }
+
+    .header-actions .account-access-link {
+        font-size: 10px;
     }
 
     .visitor-button {

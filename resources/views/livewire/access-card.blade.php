@@ -7,22 +7,24 @@
         </p>
     </div>
 
-    <div class="auth-tabs" role="tablist" aria-label="Acesso à conta">
-        <button
-            class="auth-tab {{ $mode === 'login' ? 'is-active' : '' }}"
-            type="button"
-            role="tab"
-            aria-selected="{{ $mode === 'login' ? 'true' : 'false' }}"
-            wire:click="setMode('login')"
-        >Entrar</button>
-        <button
-            class="auth-tab {{ $mode === 'register' ? 'is-active' : '' }}"
-            type="button"
-            role="tab"
-            aria-selected="{{ $mode === 'register' ? 'true' : 'false' }}"
-            wire:click="setMode('register')"
-        >Criar conta</button>
-    </div>
+    @if ($audience === 'visitor')
+        <div class="auth-tabs" role="tablist" aria-label="Acesso à conta">
+            <button
+                class="auth-tab {{ $mode === 'login' ? 'is-active' : '' }}"
+                type="button"
+                role="tab"
+                aria-selected="{{ $mode === 'login' ? 'true' : 'false' }}"
+                wire:click="setMode('login')"
+            >Entrar</button>
+            <button
+                class="auth-tab {{ $mode === 'register' ? 'is-active' : '' }}"
+                type="button"
+                role="tab"
+                aria-selected="{{ $mode === 'register' ? 'true' : 'false' }}"
+                wire:click="setMode('register')"
+            >Criar conta</button>
+        </div>
+    @endif
 
     <form class="auth-form" wire:submit="{{ $mode === 'login' ? 'login' : 'register' }}">
         @if ($mode === 'register')
@@ -89,11 +91,13 @@
         </button>
     </form>
 
-    <p class="card-switch">
-        {{ $mode === 'login' ? 'Ainda não tem uma conta?' : 'Já tem uma conta?' }}
-        <button
-            type="button"
-            wire:click="setMode('{{ $mode === 'login' ? 'register' : 'login' }}')"
-        >{{ $mode === 'login' ? 'Cadastre-se' : 'Entre por aqui' }}</button>
-    </p>
+    @if ($audience === 'visitor')
+        <p class="card-switch">
+            {{ $mode === 'login' ? 'Ainda não tem uma conta?' : 'Já tem uma conta?' }}
+            <button
+                type="button"
+                wire:click="setMode('{{ $mode === 'login' ? 'register' : 'login' }}')"
+            >{{ $mode === 'login' ? 'Cadastre-se' : 'Entre por aqui' }}</button>
+        </p>
+    @endif
 </div>

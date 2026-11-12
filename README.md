@@ -7,6 +7,12 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Acesso ao sistema
+
+O administrador não pode criar conta pela tela de login. Configure `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env` e execute `php artisan migrate --seed` para criar ou atualizar a conta administrativa. A senha deve ter pelo menos 8 caracteres.
+
+Visitantes podem criar a própria conta na área do visitante. Depois do cadastro, devem entrar com o e-mail e a senha para acessar o cardápio publicado.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

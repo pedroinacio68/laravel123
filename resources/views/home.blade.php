@@ -20,7 +20,7 @@
         </a>
         <nav class="header-actions" aria-label="Navegação principal">
             <a class="header-link" href="#como-funciona">Conheça a plataforma</a>
-            <a class="visitor-button" href="{{ route('public-menu') }}">Sou visitante <span aria-hidden="true">→</span></a>
+            <a class="header-link account-access-link" href="{{ route('visitor.login') }}">Área do visitante <span aria-hidden="true">→</span></a>
         </nav>
     </header>
 
@@ -53,7 +53,7 @@
 
         <section class="access-column" aria-label="Acesse sua conta">
             <div class="access-card">
-                <livewire:access-card />
+                <livewire:access-card audience="admin" />
             </div>
             <p class="secure-note">
                 <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2M3 7h10v7H3V7Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>

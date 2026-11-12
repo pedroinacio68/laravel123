@@ -5,10 +5,14 @@ namespace App\Livewire;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class AccessCard extends Component
 {
+    #[Locked]
+    public string $audience = 'admin';
+
     public string $mode = 'login';
 
     public string $name = '';
@@ -19,9 +23,18 @@ class AccessCard extends Component
 
     public string $password_confirmation = '';
 
+    public function mount(string $audience = 'admin'): void
+    {
+        abort_unless(in_array($audience, ['admin', 'visitor'], true), 404);
+
+        $this->audience = $audience;
+    }
+
     public function setMode(string $mode): void
     {
-        if (! in_array($mode, ['login', 'register'], true)) {
+        $availableModes = $this->audience === 'visitor' ? ['login', 'register'] : ['login'];
+
+        if (! in_array($mode, $availableModes, true)) {
             return;
         }
 
@@ -39,7 +52,8 @@ class AccessCard extends Component
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials) || ! $this->authenticatedUserMatchesAudience()) {
+            Auth::logout();
             $this->addError('email', 'E-mail ou senha inválidos.');
 
             return;
@@ -47,11 +61,13 @@ class AccessCard extends Component
 
         session()->regenerate();
 
-        $this->redirectRoute('dashboard');
+        $this->redirectRoute($this->audience === 'admin' ? 'dashboard' : 'visitor.menu');
     }
 
     public function register(): void
     {
+        abort_unless($this->audience === 'visitor', 403);
+
         $this->email = mb_strtolower($this->email);
 
         $validated = $this->validate([
@@ -60,12 +76,24 @@ class AccessCard extends Component
             'password' => ['required', 'string', Password::min(8), 'confirmed'],
         ]);
 
-        $user = User::create($validated);
+        User::create([
+            ...$validated,
+            'role' => 'visitor',
+        ]);
 
-        Auth::login($user);
-        session()->regenerate();
+        session()->flash('status', 'Cadastro realizado. Entre com seu e-mail e senha para ver o cardápio.');
+        $this->redirectRoute('visitor.login');
+    }
 
-        $this->redirectRoute('dashboard');
+    private function authenticatedUserMatchesAudience(): bool
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            return false;
+        }
+
+        return $this->audience === 'admin' ? $user->isAdmin() : $user->isVisitor();
     }
 
     public function render()

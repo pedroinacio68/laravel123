@@ -9,7 +9,7 @@
 </head>
 <body class="public-menu-page">
     <header class="public-menu-header">
-        <a class="brand" href="{{ route('home') }}" aria-label="Voltar para a página inicial">
+        <a class="brand" href="{{ route('visitor.menu') }}" aria-label="Cardápio do dia">
             <span class="brand-mark" aria-hidden="true">
                 <svg viewBox="0 0 32 32" fill="none">
                     <path d="M7 4v9M11 4v9M15 4v9M11 13v15M24 4c-4 4-5 9-5 14h5v10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -17,7 +17,10 @@
             </span>
             <span>cardápio<span class="brand-period">.</span></span>
         </a>
-        <span class="visitor-label">ACESSO DE VISITANTE</span>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button class="logout-button" type="submit">Sair</button>
+        </form>
     </header>
 
     <main class="public-menu-main">
@@ -80,7 +83,6 @@
             </div>
         </aside>
 
-        <a class="back-home-link" href="{{ route('home') }}">← Voltar para a página inicial</a>
     </main>
 
     <footer class="public-menu-footer">© {{ date('Y') }} Cardápio <span>Mais sabor, menos complicação.</span></footer>

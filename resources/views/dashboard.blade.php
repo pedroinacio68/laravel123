@@ -42,7 +42,6 @@
         @php($initial = mb_strtoupper(mb_substr($user->name, 0, 1)))
 
         <header class="dashboard-topbar">
-            <a class="dashboard-visitor-link" href="{{ route('public-menu') }}" target="_blank" rel="noopener">Ver cardápio público <span aria-hidden="true">↗</span></a>
             <span class="user-avatar" aria-hidden="true">{{ $initial }}</span>
             <span class="user-meta">{{ $user->name }}<small>{{ $user->email }}</small></span>
             <form method="POST" action="{{ route('logout') }}">
@@ -54,7 +53,7 @@
         <section class="dashboard-welcome">
             <p class="card-kicker">PAINEL ADMINISTRATIVO</p>
             <h1>Olá, {{ $user->name }} 👋</h1>
-            <p>Crie o cardápio do dia e mantenha seus alimentos sempre atualizados para os visitantes.</p>
+            <p>Crie o cardápio do dia e mantenha seus alimentos sempre atualizados para os visitantes cadastrados.</p>
         </section>
 
         <section class="stats-grid" aria-label="Resumo do cardápio">
